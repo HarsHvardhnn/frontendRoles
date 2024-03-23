@@ -16,7 +16,7 @@ function App() {
   element: <Login/>
 },
 {
-  path:'/',
+  path:'/SignUp',
   element: <SignUp />
 },
 {
