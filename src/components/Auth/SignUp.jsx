@@ -1,213 +1,249 @@
 import React, { useState } from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import Input from "./Input";
-import Phone from "./Phone";
 import { Link } from "react-router-dom";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 
-const initialValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  phoneNumber: {
-    countryCode: "",
-    number: "",
-  },
-  password: "",
-  confirmPassword: "",
-  agreeToTerms: false,
-};
+import openEye from "./open.png";
+import closedEye from "./close.png";
+import bgImage from "./bg2.jpg";
 
-const validationSchema = Yup.object().shape({
-  firstName: Yup.string().required("First Name is required"),
-  lastName: Yup.string().required("Last Name is required"),
-  email: Yup.string().email("Invalid email address").required("Email is required"),
-  phoneNumber: Yup.object().shape({
-    countryCode: Yup.string().required("Country Code is required"),
-    number: Yup.string().matches(/^\d+$/, "Phone Number should only contain numbers").required("Phone Number is required"),
-  }),
-  password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
-  confirmPassword: Yup.string().oneOf([Yup.ref("password")], "Passwords must match").required("Please confirm your password"),
-  agreeToTerms: Yup.bool().oneOf([true], "You must agree to the terms and conditions"),
-});
+const SignUpPage = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-const countryCodes =[  { label: "+1", value: "1" },
-  { label: "+44", value: "44" },
-  { label: "+91", value: "91" },
-];
+  const initialValues = {
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+    confirmPassword: "",
+  };
 
-const SignUp = () => {
-  const [selectedCountry, setSelectedCountry] = useState(countryCodes[2]);
+  const onSubmit = (values) => {
+    console.log(values);
+  };
 
-  const handleSubmit = (values) => {
-    console.log("Form Data:", values);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
-      {({
-        values,
-        handleChange,
-        handleBlur,
-        handleSubmit,
-        errors,
-        touched,
-      }) => (
-        <div className="max-w-[60%]  p-6 bg-white shadow-md flex-col justify-center">
-          <div className="md:gap-6 md:flex w-[100%] justify-between">
-         <div className="">
-         <Input
-              name="firstName"
-              value={values.firstName}
-              onChange={handleChange}
-              handleOnBlur={handleBlur}
-              error={errors?.firstName}
-              isTouched={touched?.firstName}
-              placeholder="First Name"
-              className="p-2 border border-[#686666]"
-              label={"First Name"}
-            />
-         </div>
-         <div className=" md:w-full  md:gap-6 md:flex ">
-            <Input
-              name="lastName"
-              value={values.lastName}
-              onChange={handleChange}
-              handleOnBlur={handleBlur}
-              error={errors?.lastName}
-              isTouched={touched?.lastName}
-              placeholder="Last Name"
-              className="p-2 border border-[#686666]"
-              label={"Last Name"}
-            />
-          </div>
-          </div>
-
-          <div className="mb-4">
-            <Input
-              name="email"
-              value={values.email}
-              onChange={handleChange}
-              handleOnBlur={handleBlur}
-              error={errors?.email}
-              isTouched={touched?.email}
-              placeholder="Email"
-              className="p-2 border border-[#686666] md:w-full"
-              label={"Email"}
-            />
-          </div>
-          <div>
-            <Phone
-              countryOptions={countryCodes}
-              selectedCountry={selectedCountry}
-              handelOnBlur={handleBlur} 
-              onCountryChange={(option) => {
-                setSelectedCountry(option);
-                handleChange({
-                  target: {
-                    name: "phoneNumber",
-                    value: {
-                      ...values.phoneNumber,
-                      countryCode: option?.value || "",
-                    },
-                  },
-                });
-              }}
-              phoneNumber={values.phoneNumber.number}
-              onPhoneNumberChange={(e) =>
-                handleChange({
-                  target: {
-                    name: "phoneNumber",
-                    value: { ...values.phoneNumber, number: e.target.value },
-                  },
-                })
-              }
-              errors={errors}
-              touched={touched}
-            />
-          </div>
-
-          <div className="mb-4">
-            <Input
-              name="password"
-              value={values.password}
-              onChange={handleChange}
-              handleOnBlur={handleBlur}
-              error={errors?.password}
-              isTouched={touched?.password}
-              placeholder="Password"
-              type="password"
-              className="p-2 border border-[#686666] md:w-full"
-              label={"Password"}
-            />
-          </div>
-
-          <div className="mb-4">
-            <Input
-              name="confirmPassword"
-              value={values.confirmPassword}
-              onChange={handleChange}
-              handleOnBlur={handleBlur}
-              error={errors?.confirmPassword}
-              isTouched={touched?.confirmPassword}
-              placeholder="Confirm Password"
-              type="password"
-              className="p-2 border border-[#686666] md:w-full"
-              label={"Confirm Password"}
-            />
-          </div>
-          <div className="flex-col">
-            <div className=" flex  md:flex mb-2">
-              <input
-                type="checkbox"
-                name="agreeToTerms"
-                checked={values.agreeToTerms}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                className="mr-2 w-6 h-6 mt-2 rounded-none md:mt-0 cursor-pointer" 
-              />
-
-              <span className="text-sm">
-                I Agree to the
-                <span className="text-[#941D39]">
-                  &nbsp; <a className="underline cursor-pointer">Terms and Conditions</a>
-                </span>
-                &nbsp; &
-                <span className="text-[#941D39] ">
-                  &nbsp; <a className="underline cursor-pointer">Privacy Policy</a>
-                </span>
-              </span>
-            </div>
-
-            <div>
-              {touched.agreeToTerms && errors.agreeToTerms && (
-                <div className="text-red-500">{errors.agreeToTerms}</div>
-              )}
-            </div>
-          </div>
-          <div className="flex flex-col mt-4">
-
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="bg-[#941D39] text-white py-2 mb-3 px-4 cursor-pointer focus:outline-none focus:shadow-outline-blue md:w-[45%] w-[100%]"
-            >
-            Sign Up
-          </button>
-          <p className='mb-4 sm: '> Already have an account?&nbsp;
-            <Link className='text-[#941D39] underline' to='/login'>
-               Login now
+    <div className="min-h-screen flex justify-center items-center bg-blue-200 ">
+      <div className="flex bg-white justify-center items-center w-3/5 shadow-xl rounded-xl">
+        {/* Left section with form */}
+        <div
+          className="flex-1 bg-white p-8 rounded-s-xl w-full sm:w-96"
+        >
+          <h2 className="text-2xl font-bold mb-2">Sign Up</h2>
+          {/* Login link */}
+          <div className="m-4 ml-0">
+            <span>Already a member?</span>
+            <Link to="/login" className="ml-1 text-blue-500 hover:underline">
+              Log In Now
             </Link>
-          </p>
+          </div>
+          <Formik initialValues={initialValues} onSubmit={onSubmit}>
+            {({ errors, touched }) => (
+              <Form>
+                {/* Form fields here */}
+                <div className="flex justify-between ">
+                  <div className="mb-4">
+                    {/* First Name */}
+                    <Field
+                      type="text"
+                      name="firstName"
+                      placeholder="First Name"
+                      className={`w-full px-2.5 py-1.5 border rounded-md focus:outline-none ${
+                        errors.firstName && touched.firstName
+                          ? "border-red-500"
+                          : " focus:border-black"
+                      }`}
+                    />
+                    <ErrorMessage
+                      name="firstName"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
+                  </div>
+                  {/* Other form fields */}
+                  <div className="mb-4">
+                    {/* Last Name */}
+                    <Field
+                      type="text"
+                      name="lastName"
+                      placeholder="Last Name"
+                      className={`w-full px-2.5 py-1.5 border rounded-md focus:outline-none ${
+                        errors.lastName && touched.lastName
+                          ? "border-red-500"
+                          : " focus:border-black"
+                      }`}
+                    />
+                    <ErrorMessage
+                      name="lastName"
+                      component="div"
+                      className="text-red-500 text-sm"
+                    />
+                  </div>
+                </div>
+                <div className="mb-4">
+                  {/* Email */}
+                  <Field
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    className={`w-full px-2.5 py-1.5 border rounded-md focus:outline-none ${
+                      errors.email && touched.email
+                        ? "border-red-500"
+                        : " focus:border-black"
+                    }`}
+                  />
+                  <ErrorMessage
+                    name="email"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div className="mb-4">
+                  {/* Phone Number */}
+                  <Field
+                    type="tel"
+                    name="phoneNumber"
+                    placeholder="Phone Number"
+                    className={`w-full px-2.5 py-1.5 border rounded-md focus:outline-none ${
+                      errors.phoneNumber && touched.phoneNumber
+                        ? "border-red-500"
+                        : " focus:border-black"
+                    }`}
+                  />
+                  <ErrorMessage
+                    name="phoneNumber"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div className="mb-4 relative">
+                  {/* Password */}
+                  <Field
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Password"
+                    className={`w-full px-2.5 py-1.5 border rounded-md focus:outline-none ${
+                      errors.password && touched.password
+                        ? "border-red-500"
+                        : " focus:border-black"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 focus:outline-none"
+                  >
+                    <img
+                      src={showPassword ? openEye : closedEye}
+                      alt="Toggle Password Visibility"
+                      className="h-6 w-6"
+                    />
+                  </button>
+                  <ErrorMessage
+                    name="password"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                <div className="mb-4 relative">
+                  {/* Confirm Password */}
+                  <Field
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    className={`w-full px-2.5 py-1.5 border rounded-md focus:outline-none ${
+                      errors.confirmPassword && touched.confirmPassword
+                        ? "border-red-500"
+                        : " focus:border-black"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleConfirmPasswordVisibility}
+                    className="absolute top-1/2 right-3 transform -translate-y-1/2 focus:outline-none"
+                  >
+                    <img
+                      src={showConfirmPassword ? openEye : closedEye}
+                      alt="Toggle Confirm Password Visibility"
+                      className="h-6 w-6"
+                    />
+                  </button>
+                  <ErrorMessage
+                    name="confirmPassword"
+                    component="div"
+                    className="text-red-500 text-sm"
+                  />
+                </div>
+                {/* Submit button */}
+                <button
+                  type="submit"
+                  className="w-full bg-blue-500 text-white py-2 px-4 rounded-full mt-2 hover:bg-blue-600"
+                >
+                  Sign Up
+                </button>
+              </Form>
+            )}
+          </Formik>
+
+          <div className="mt-7">
+            <div className="flex items-center mb-7">
+              <div className="border-t border-black flex-grow"></div>
+              <span className="mx-4  text-sm text-gray-500">Social Signup</span>
+              <div className="border-t border-black flex-grow"></div>
             </div>
+            <div>
+              {/* Google sign up button */}
+              <button
+                //onClick={handleGoogleSignUp}
+                className="flex items-center justify-center py-2 px-4 rounded-full mb-2 border w-full"
+              >
+                <img
+                  //src={googleLogo}
+                  alt="Google Logo"
+                  className="w-6 h-6 mr-2"
+                />
+                Sign Up with Google
+              </button>
+
+              {/* Facebook sign up button */}
+              <button
+                //onClick={handleFacebookSignUp}
+                className="flex items-center justify-center py-2 px-4 rounded-full border w-full"
+              >
+                <img
+                  //src={facebookLogo}
+                  alt="Facebook Logo"
+                  className="w-6 h-6 mr-2"
+                />
+                Sign Up with Facebook
+              </button>
+            </div>
+          </div>
         </div>
-      )}
-    </Formik>
+
+        {/* Right section with background image */}
+        <div
+          className="flex-1 "
+        >
+          {/* Background image here */}
+          <img
+            src={bgImage}
+            alt="Background"
+            className="w-full h-full object-cover rounded-r-xl"
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default SignUp;
+export default SignUpPage;
